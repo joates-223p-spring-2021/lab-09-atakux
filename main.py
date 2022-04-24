@@ -189,7 +189,7 @@ class Student:
 
 		#receive user input for the students grades and store in a list
 		for i in range(len(self.students)):
-			grade = input(f"\nGrade for {self.students[i]} for {self.assignments[assignmentName - 1]} > ")
+			grade = input(f"\nGrade for {self.students[i]} for {self.assignments[assignmentName - 1]}: ")
 			self.listOfGrades.append(grade)
 
 		#write the grades to the grades.txt file
@@ -222,7 +222,7 @@ class Student:
 	def takeAttendance(self, date):
 		"""take attendance and write them to attendance.txt"""
 		for i in range(len(self.students)):
-			attended = input(f"\nStudent {self.students[i]} (p/a) > ")
+			attended = input(f"\nStudent {self.students[i]} (p/a): ")
 			self.listOfRolls.append(attended)
 
 		with open("attendance.txt", 'r+') as attendanceFile:
