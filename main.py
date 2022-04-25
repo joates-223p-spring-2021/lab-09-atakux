@@ -7,192 +7,154 @@ atakux707@csu.fullerton.edu
 """
 
 
-
-
-
-#file opening functions
-
-def listStudents():
-	"""lists all the students"""
-
+def getStudents():
+	"""get all the students from the grades file"""
+	temp = []
 	studentList = []
 
-	#open the attendance file
-	with open("attendance.txt", 'r') as attendanceFile:		
-		#loop thru all the lines
-		for student in attendanceFile:
+	with open("grades.txt", 'r') as assignmentFile:
+		#parse thru and add to temp list
+		for line in assignmentFile:
+			line = line.strip('\n')
 
-			#remove commas and endlines
-			studentList.append(student.replace(',,,,,,,,,,,,,,,,', ' ').strip('\nap '))
+			#split by comma
+			student = line.split(',')
 
-	#remove the top line
-	studentList.pop(0)
+			temp.append(student)
 
-	#return the list of students
+	#remove top line
+	temp.pop(0)
+
+	#save only the first column of each row
+	for i in range(len(temp)):
+		studentList.append(temp[i][0])
+
 	return studentList
 
 
+def getGrades():
+	"""get all the grades from the grades file"""
+	grades = []
 
-def getDates():
-	"""grab all the dates listed in attendance file"""
+	with open("grades.txt", 'r') as assignmentFile:
+		#parse thru and add to temp list
+		for line in assignmentFile:
+			line = line.strip('\n')
+
+			#split by comma
+			grade = line.split(',')
+
+			grades.append(grade)
+
+	#remove top line
+	grades.pop(0)
+
+	return grades
+
+
+def getAttendance():
+
+	attendance = []
 
 	with open("attendance.txt", 'r') as attendanceFile:
-		#read the first line of the file
-		dates = attendanceFile.readline()
-		
-		#remove commas and endlines
-		dates = dates.replace('\n', '').split(', ')
+		for line in attendanceFile:
+			line = line.strip('\n')
 
-		#remove the first column (student)
-		dates.pop(0)
+			attend = line.split(',')
+
+			attendance.append(attend)
+
+	attendance.pop(0)
+
+	return attendance
+
+
+def getDates():
+	"""get all dates"""
+	with open("attendance.txt") as attendanceFile:
+		#only read in the first line to get the titles
+		line = attendanceFile.readline()
+		line = line.strip('\n')
+
+		#separate by comma
+		dates = line.split(', ')
+
+	#remove the student column to keep only dates
+	dates.pop(0)
 
 	return dates
 
 
-
-
 def getAssignmentNames():
 	"""lists all the assignment names"""
-
-	#open the grades file
 	with open("grades.txt", 'r') as assignmentFile:
-		assigns = assignmentFile.readline()
-		#read each line into assignmentList
-		assigns = assigns.replace('\n', '').split(', ')
+		#only read in the first line to get the titles
+		line = assignmentFile.readline()
+		line = line.strip('\n')
 
-		#remove Student
-		assigns.pop(0)
+		#separate by comma
+		assigns = line.split(', ')
 
-	#return the list of assignment names
+	#remove the student column to keep only assign names
+	assigns.pop(0)
+
+
 	return assigns
 
 
 
-def listGrades():
-	"""lists all the grades"""
-	gradesList = []
-
-	#grab all the grades
-	with open("grades.txt", 'r') as assignmentFile:
-		#loop thru all the lines
-		for line in assignmentFile.readlines():
-
-			#remove commas and new lines
-			gradesList.append(line.replace('\n', '').split(',,,,,, '))
-
-	#remove the first line
-	gradesList.pop(0)
-
-	return gradesList
-
-
-def listAttendance():
-	"""lists all the attendance"""
-	attendList = []
-
-	with open("attendance.txt", 'r') as attendanceFile:
-		#loop thru all the lines
-		for line in attendanceFile.readlines():
-
-			#remove commas and new lines
-			attendList.append(line.replace('\n', '').split(',,,,,,,,,,,,,,,, '))
-
-	#remove the first line
-	attendList.pop(0)
-
-	return attendList
-
-
-
-
-
-#student class
 class Student:
-	#declare the main lists using our file functions
-	students = listStudents()
-	assignments = getAssignmentNames()
-	assignGrades = listGrades()
-	rollCall = listAttendance()
-	datesList = getDates()
-
-	#declare the last two main lists as empty
-	listOfGrades = []
-	listOfRolls = []
-
-
+	#main lists
+	students = getStudents()
+	assigns = getAssignmentNames()
+	dates = getDates()
 	
-	def displayAssignmentNames(self):
-		"""display assignment names	"""
-		for i in range(len(self.assignments)):
-			print(self.assignments[i])
+	#full files for parsing:
+	fullGrades = getGrades()
+	fullAttends = getAttendance()
+
+	#secondary lists
+	grades = []
+	attendance = []
 
 
-
-	#option 1
-	def displayStudents(self):
-		"""display students"""
+	def listStudents(self):
+		"""option 1: List Students"""
 		for i in range(len(self.students)):
-			print(self.students[i])		
+			print(self.students[i])
 
-		#spacing
-		print("\n")
-
-
-
-	#option 2
-	def displayGrades(self):
-		"""display students grades"""
-		#parse thru the files
+	def listGrades(self):
+		"""option 2: List Grades"""
+		#access each row
 		for i in range(len(self.students)):
-			#print student name	
-			print(f"\n{self.students[i]}", end='\n')
+			print(f"\n{self.students[i]}", end="\n")
+			#access each cell
+			for j in range(len(self.assigns)):
+				print(f"{self.assigns[j]}: {''.join(self.fullGrades[i][j+1])}")
 
-			for j in range(0,6):
-				print(f"{self.assignments[j]}: ",end='')
-				print(f"{''.join(self.assignGrades[i][j+1:j+j+2])}")
-
-		#spacing
-		print("\n")
-
-
-
-
-#need to figure out how to print the thingies
-#*************************************************************
-	#option 3
-	def displayAttendance(self, person):
-		"""display attendance of a given student"""
-		status = ''
-		#print students name
+	def listAttendance(self, person):
+		"""option 3: List Attendance"""
 		print(self.students[person-1])
-		
-		#print all the days
-		for i in range(0,16):
-			status = ''.join(self.rollCall[person-1][i+1:])
+		#access each row and column
+		for i in range(len(self.dates)):
+			status = ''.join(self.fullAttends[person-1][i+1])
 
-			if 'p' in status:
-				print(f"{self.datesList[i]}: Present")
-			elif 'a' in status:
-				print(f"{self.datesList[i]}: Absent")
+			if status == 'p':
+				status = "Present"
+			elif status == 'a':
+				status = "Absent"
 			else:
-				print(f"{self.datesList[i]}: ")
+				status = ''
 
-		#spacing
-		print("\n")
-#*************************************************************
+			print(f"{self.dates[i]}: {status}")
 
-
-
-	#option 4
 	def submitGrade(self, assignmentName):
-		"""submit grades and write them to the grades.txt"""
-
+		"""option 4: Submit Grade"""
 		#receive user input for the students grades and store in a list
 		for i in range(len(self.students)):
-			grade = input(f"\nGrade for {self.students[i]} for {self.assignments[assignmentName - 1]}: ")
-			self.listOfGrades.append(grade)
+			grade = input(f"\nGrade for {self.students[i]} for {self.assigns[assignmentName - 1]} > ")
+			self.fullGrades[i].insert(assignmentName, grade)
 
-		#write the grades to the grades.txt file
 		with open("grades.txt", 'r+') as assignmentFile:
 			lines = assignmentFile.readlines()
 
@@ -203,27 +165,19 @@ class Student:
 			assignmentFile.write(lines[0])
 
 			#writing the student grade to each line
-			for i in range(min(len(lines), len(self.listOfGrades))):
-				assignmentFile.write(lines[i+1].rstrip('\n'))
-				assignmentFile.write(' ')
-				assignmentFile.write(str(self.listOfGrades[i]))
-				assignmentFile.write(' ,,,,,, ')
+			for i in range(min(len(lines), len(self.fullGrades))):
+				assignmentFile.write(lines[i+1].rstrip(',\n'))
+				assignmentFile.write(',')
+				assignmentFile.write(''.join(self.fullGrades[i][assignmentName])+(','*(len(self.assigns)-assignmentName)))
 				assignmentFile.write('\n')
-
 			assignmentFile.truncate()
 
-		#spacing
-		print("\n")
 
-
-
-
-	#option 5
 	def takeAttendance(self, date):
-		"""take attendance and write them to attendance.txt"""
+		#receive user input for the students grades and store in a list
 		for i in range(len(self.students)):
-			attended = input(f"\nStudent {self.students[i]} (p/a): ")
-			self.listOfRolls.append(attended)
+			attend = input(f"\nStudent {self.students[i]} (p/a) > ")
+			self.fullAttends[i].insert(date, attend)
 
 		with open("attendance.txt", 'r+') as attendanceFile:
 			lines = attendanceFile.readlines()
@@ -234,18 +188,13 @@ class Student:
 			#rewrite the first line
 			attendanceFile.write(lines[0])
 
-			#writing the student roll to each line
-			for i in range(min(len(lines), len(self.listOfRolls))):
-				attendanceFile.write(lines[i+1].rstrip('\n'))
-				attendanceFile.write(' ')
-				attendanceFile.write(str(self.listOfRolls[i]))
-				attendanceFile.write(' ,,,,,,,,,,,,,,,, ')
+			#writing the student grade to each line
+			for i in range(min(len(lines), len(self.fullAttends))):
+				attendanceFile.write(lines[i+1].rstrip(',\n'))
+				attendanceFile.write(',')
+				attendanceFile.write(''.join(self.fullAttends[i][date])+(','*(len(self.dates)-date)))
 				attendanceFile.write('\n')
-
 			attendanceFile.truncate()
-
-		#spacing
-		print("\n")	
 
 
 
@@ -255,7 +204,6 @@ asking = True
 
 #instantiate Student object
 student = Student()
-listOfStudents = list(listStudents())
 
 #while the user has not quit	
 while asking:	
@@ -269,16 +217,20 @@ while asking:
 	if choice == 'q':
 		asking = False
 
-	#if user clicked 1, call displayStudents
+	#if user clicked 1, call listStudents
 	elif choice == '1':
-		student.displayStudents()
+		student.listStudents()
+		print("\n")
 
-	#if user clicked 2, call displayGrades
+	#if user clicked 2, call listGrades
 	elif choice == '2':
-		student.displayGrades()
+		student.listGrades()
+		print("\n")
 
 	#if user clicked 3, call displayAttendance
 	elif choice == '3':
+		#grab student names
+		listOfStudents = getStudents()
 		#receive input from user to grab the student 
 		#we want to display attendance for
 		print("Which student?")
@@ -289,7 +241,9 @@ while asking:
 
 		#receive input and call displayAttendance
 		person = int(input("\n> "))
-		student.displayAttendance(person)
+		student.listAttendance(person)
+
+		print("\n")
 
 
 	#if user clicked 4, call submitGrade
@@ -310,7 +264,9 @@ while asking:
 			submition = int(input("\n> "))
 			student.submitGrade(submition)
 		except:
-			print("invalid input. try again.\n")
+			print("invalid input. try again.")
+		finally:
+			print("\n")
 
 
 	#if user clicked 5, call takeAttendance
@@ -331,7 +287,9 @@ while asking:
 			day = int(input("\n> "))
 			student.takeAttendance(day)
 		except:
-			print("invalid input. try again.\n")
+			print("invalid input. try again.")
+		finally:
+			print("\n")
 
 	#if the users input does not match one of the options,
 	#prompt them again to input a proper option
