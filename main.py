@@ -174,6 +174,7 @@ class Student:
 
 
 	def takeAttendance(self, date):
+		"""option 5: Take Attendance"""
 		#receive user input for the students grades and store in a list
 		for i in range(len(self.students)):
 			attend = input(f"\nStudent {self.students[i]} (p/a) > ")
